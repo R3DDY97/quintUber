@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse, QueryDict
 
 from .models import  User, Driver, Pending_Ride, User_Ride
-from .service import Ride_Service, Ride,  Push_Notification
+from .service import Driver_Service, Ride_Service,  Push_Notification
 
 
 def parse_req(req):
@@ -20,8 +20,8 @@ def request_ride(request):
         userId = data.userId
         location = data.location
         cab_color = data.cab_color
-        ride_service = Ride_Service(userId, location, cab_color)
-        nearest_driver = ride_service.get_nearest_drivers()
+        driver_service = Driver_Service(userId, location, cab_color)
+        nearest_driver = driver_service.get_nearest_drivers()
         if nearest_driver:
             rideId = uuid4()
             user_ride_data = {"userId": userId, "driverId": driverId, ride_id: rideId, "ride_state": "Pending",
@@ -37,7 +37,8 @@ def accept_ride(request):
     if request.method == "POST":
         data = parse_req(request)
         rideId = data.rideId
-        ride = Ride(rideId)
+        driverId = data.driverId
+        ride = Ride_Service(rideId)
         ride.ride_accepted()
         return JsonResponse({success: True, message: "OK"})
     return JsonResponse({success: False, message: "method not allowed"})
@@ -49,7 +50,7 @@ def start_ride(request):
         data = parse_req(request)
         rideId = data.rideId
         location = data.location
-        ride = Ride(rideId, location)
+        ride = Ride_Service(rideId, location)
         ride.ride_started()
         return JsonResponse({success: True, message: "OK"})
     return JsonResponse({success: False, message: "method not allowed"})
@@ -59,7 +60,7 @@ def end_ride(request):
         data = parse_req(request)
         rideId = data.rideId
         location = data.location
-        ride = Ride(rideId, location)
+        ride = Ride_Service(rideId, location)
         ride.ride_ended()
         return JsonResponse({success: True, message: "OK"})
     return JsonResponse({success: False, message: "method not allowed"})
@@ -68,6 +69,6 @@ def end_ride(request):
 
 def driver_list(request):
     if request.method == 'GET':
-        drivers = Driver.objects.all()
+        drivers = Driver.objects.filter(available=True)
         return JsonResponse({success: True, data: drivers})
     return JsonResponse({success: False, message: "method not allowed"})
