@@ -45,6 +45,7 @@ class User_Ride(models.Model):
     ride_id = models.CharField(primary_key = True)
     user_id = models.ForeignKey(User)
     driver_id = models.ForeignKey(Driver)
+    ride_request_time = models.DateTimeField(null = True)
     start_time = models.DateTimeField(null = True)
     end_time = models.DateTimeField(null = True)
     ride_state =  models.CharField(choices=RIDE_STATUS, default=PENDING)

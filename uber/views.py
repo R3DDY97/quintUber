@@ -25,7 +25,7 @@ def request_ride(request):
         if nearest_driver:
             rideId = uuid4()
             user_ride_data = {"userId": userId, "driverId": driverId, ride_id: rideId, "ride_state": "Pending",
-                              "initial_lat": location.latitude, "initial_long": location.longitude}
+                              "initial_lat": location.latitude, "initial_long": location.longitude, "ride_request_time": datetime.now()}
             User_Ride.objects.create(user_ride_data)
             Push_Notification.notify_driver(nearest_driver, rideId)
             return JsonResponse({success: False, message:"Processing Request"})
