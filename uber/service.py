@@ -1,22 +1,35 @@
+import json
 from math import sqrt
 from datetime import datetime
 from .models import  User, Driver, Pending_Ride, User_Ride
+from .bst import Binary_Search_Tree
+
+import pandas as pd
+
+with open("./driver_dist.json", "r") as fp:
+    driver_dist_dict = json.load(fp)
+
+driver_df = pd.read_csv("./sample_driver_data.csv")
+
+
+# source  https://docs.obspy.org/packages/autogen/obspy.geodetics.base.degrees2kilometers.html
+DEGREE_KMS = 111.19492664455873
 
 class Distance_Service:
-    def calc_two_location_distance(self, location1, location2):
-        lat1 = location1.latitude
-        long1 = location1.longitude
-        lat2 = location2.latitude
-        long2 = location2.longitude
-        distance = sqrt(((lat2 - lat1) ** 2) + ((long2 - long1) ** 2))
-        rounded_distance = round(distance, 2)
-        return round_distance
+    # def calc_two_location_distance(self, location1, location2):
+    #     lat1 = location1.latitude
+    #     long1 = location1.longitude
+    #     lat2 = location2.latitude
+    #     long2 = location2.longitude
+    #     diff_location = sqrt( ( (lat2 - lat1) ** 2 ) + ( (long2 - long1) ** 2 ) )
+    #     distance = round(diff_location * DEGREE_KMS, 2)
+    #     return distance
 
 
     def calc_distance_from_origin(self, location):
-        distance = sqrt((location.latitude ** 2) + (location.longitude ** 2))
-        rounded_distance = round(distance, 2)
-        return round_distance
+        diff_location = sqrt((location.latitude ** 2) + (location.longitude ** 2))
+        distance = round(diff_location * DEGREE_KMS, 2)
+        return distance
 
 
 
@@ -28,7 +41,7 @@ class Driver_Service:
         self.user_longitude = location.longitude
 
     def get_available_drivers(self):
-        available_drivers = 100
+        available_drivers = Driver.objects.filter(available=True)
         return available_drivers
 
 
@@ -76,7 +89,8 @@ class Ride_Service:
     def ride_ended(self, dest_location):
         dest_lat = dest_location.latitude
         dest_long = dest_location.longitude
-        Driver.objects.filter(driver_id=self.driverId).update(available=True, latest_lat=dest_lat, latest_long=dest_long)
+        driver_distance_from_origin = Distance_Service.distance_from_origin(dest_location)
+        Driver.objects.filter(driver_id=self.driverId).update(available=True, latest_lat=dest_lat, latest_long=dest_long, distance_from_origin=driver_distance_from_origin)
         dest_time = datetime.now()
         travel_time = dest_time - self.rideObj.start_time
         travel_time_min = round(travel_time.seconds / 60 , 2)
@@ -93,5 +107,5 @@ class Push_Notification:
         pass
 
     def notify_user(self, userId, driverObj):
-        # fcm notify user about ride
+        # fcm notify user about ride, driver  details
         pass

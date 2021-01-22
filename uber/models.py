@@ -19,12 +19,13 @@ class Driver(models.Model):
     phone = models.CharField(unique=True, max_length = 10)
     name = models.CharField(max_length = 50)
     vehicle = models.CharField(max_length = 50)
+    vehicle_regd_number = models.CharField(max_length = 50)
     color = models.CharField(max_length=50)
     available = models.BooleanField(default = True)
     latest_lat = models.FloatField(blank = True)
     latest_long = models.FloatField(blank = True)
+    distance_from_origin = models.Integer(blank = True)
     gcm_id = models.CharField(max_length = 200, blank = True)
-    license_plate = models.CharField(max_length = 10, blank = True)
 
 
 class User_Ride(models.Model):

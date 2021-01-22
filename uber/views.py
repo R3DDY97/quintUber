@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
-from .models import  User, Driver, Pending_Ride, User_Ride
 from .service import Driver_Service, Ride_Service,  Push_Notification
 
 
