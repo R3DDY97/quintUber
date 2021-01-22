@@ -1,15 +1,25 @@
 import json
+from random import shuffle
 from math import sqrt
 from datetime import datetime
 from .models import  User, Driver, Pending_Ride, User_Ride
-from .bst import Binary_Search_Tree
+from .binary_search_tree import Tree
 
 import pandas as pd
 
 with open("./driver_dist.json", "r") as fp:
     driver_dist_dict = json.load(fp)
+    distance_list = list(driver_dist_dict.keys())
+    shuffle(distance_list)
 
 driver_df = pd.read_csv("./sample_driver_data.csv")
+
+# build bst using drivers distances from origin
+DISTANCE_TREE = Tree()
+for dist in distance_list:
+    DISTANCE_TREE.Add_Node(dist)
+
+
 
 
 # source  https://docs.obspy.org/packages/autogen/obspy.geodetics.base.degrees2kilometers.html
@@ -41,7 +51,10 @@ class Driver_Service:
         self.user_longitude = location.longitude
 
     def get_available_drivers(self):
-        available_drivers = Driver.objects.filter(available=True)
+        if cab_color.lower() == "pink":
+            available_drivers = Driver.objects.filter(available=True, cab_color='pink')
+        else:
+            available_drivers = Driver.objects.filter(available=True)
         return available_drivers
 
 
