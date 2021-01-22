@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-
 
 class User(models.Model):
     user_id = models.AutoField(primary_key = True)
@@ -23,8 +21,8 @@ class Driver(models.Model):
     vehicle = models.CharField(max_length = 50)
     color = models.CharField(max_length=50)
     available = models.BooleanField(default = True)
-    pos_lat = models.FloatField(blank = True)
-    pos_long = models.FloatField(blank = True)
+    latest_lat = models.FloatField(blank = True)
+    latest_long = models.FloatField(blank = True)
     gcm_id = models.CharField(max_length = 200, blank = True)
     license_plate = models.CharField(max_length = 10, blank = True)
 
@@ -40,19 +38,20 @@ class User_Ride(models.Model):
         (CANCELLED, 'Cancelled'),
         (PENDING, 'Pending'),
         (ENDED, 'Ended'),
-        (RIDING, 'Riding'),
+        (RIDING, 'Started'),
     ]
     ride_id = models.CharField(primary_key = True)
     user_id = models.ForeignKey(User)
     driver_id = models.ForeignKey(Driver)
+    cab_color = models.CharField(max_length = 10, blank = True)
     ride_request_time = models.DateTimeField(null = True)
     start_time = models.DateTimeField(null = True)
     end_time = models.DateTimeField(null = True)
     ride_state =  models.CharField(choices=RIDE_STATUS, default=PENDING)
-    initial_lat = models.FloatField(null = True)
-    initial_long = models.FloatField(null = True)
-    final_lat = models.FloatField(null = True)
-    final_long = models.FloatField(null = True)
+    start_lat = models.FloatField(null = True)
+    start_long = models.FloatField(null = True)
+    destination_lat = models.FloatField(null = True)
+    destination_long = models.FloatField(null = True)
     distance = models.DecimalField(max_digits = 5, decimal_places = 1, null = True)
-    travel_time = models.CharField(max_length = 10, blank = True)
+    travel_time = models.Integer(max_length = 10, blank = True) # in minutes
     price = models.IntegerField(null = True)
