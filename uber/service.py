@@ -163,7 +163,7 @@ class Ride_Service:
         self.rideId = rideId
         self.rideObj = memory_data.RIDE_DATA.get(rideId)
         self.driverId = self.rideObj.get("driver_id")
-        self.userId = self.rideObj["user_id"]
+        self.userId = self.rideObj.get("user_id")
         self.distance_service = Distance_Service()
         self.push_notification = Push_Notification()
 
