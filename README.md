@@ -37,15 +37,7 @@ git clone https://github.com/R3DDY97/quintUber
 cd quintuber
 pip3 install -r requirements.txt
 
-python manage.py migrate
-
 python3 manage.py runserver
-
-or
-
-python3 manage.py runserver "0.0.0.0:8000"
-
-
 ```
 
 ---
@@ -54,11 +46,11 @@ python3 manage.py runserver "0.0.0.0:8000"
 
 - To get list of available users
 
-    Open the link http://0.0.0.0:8000/ride/drivers
+    Open the link http://127.0.0.1:8000//ride/drivers
 
 - To visualise the driver cabs location on map
 
-    Open the link http://0.0.0.0:8000/ride/cars
+    Open the link http://127.0.0.1:8000//ride/cars
 
 ![Available Cars/Drivers Map Visualisation](https://github.com/R3DDY97/quintUber/blob/main/pics/map.png)
 

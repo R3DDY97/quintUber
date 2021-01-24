@@ -124,7 +124,7 @@ class Driver_Service:
 
 
 
-
+# using db, models
 # class Ride_Service:
 #     def __init__(self, rideId):
 #         self.rideId = rideId
@@ -156,6 +156,7 @@ class Driver_Service:
 #         travel_time = dest_time - self.rideObj.start_time
 #         travel_time_min = round(travel_time.seconds / 60 , 2)
 #         ride_status = "Ended"
+
 
 # use memory data - dict , df
 class Ride_Service:
