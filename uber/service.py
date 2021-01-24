@@ -3,19 +3,20 @@ from math import sqrt
 from datetime import datetime
 # from .models import  User, Driver, Pending_Ride, User_Ride
 from .binary_search_tree import Tree
-
+from .constants import DRIVER_DATA_CSV, DRIVER_DIST_JSON, PINK_DRIVER_DIST_JSON, DEGREE_KMS, PINK
 import pandas as pd
+
 
 
 class Memory_Data:
     def __init__(self):
-        self.DRIVER_DIST_MAP = self.get_driver_dist("./driver_dist.json")
-        self.PINK_DRIVER_DIST_MAP = self.get_driver_dist("./pink_driver_dist.json")
+        self.DRIVER_DIST_MAP = self.get_driver_dist(DRIVER_DIST_JSON)
+        self.PINK_DRIVER_DIST_MAP = self.get_driver_dist(PINK_DRIVER_DIST_JSON)
 
         self.DRIVER_DIST_LIST = list(self.DRIVER_DIST_MAP.keys())
         self.PINK_DRIVER_DIST_LIST = list(self.PINK_DRIVER_DIST_MAP.keys())
 
-        self.DRIVER_DF = pd.read_csv("./sample_driver_data.csv")
+        self.DRIVER_DF = pd.read_csv(DRIVER_DATA_CSV)
 
         self.DISTANCE_TREE = self.get_bst(self.DRIVER_DIST_LIST)
         self.PINK_DISTANCE_TREE = self.get_bst(self.PINK_DRIVER_DIST_LIST)
@@ -36,12 +37,14 @@ class Memory_Data:
             DISTANCE_TREE.add_node(float(dist))
         return DISTANCE_TREE
 
+    def get_drivers_list(self):
+        avail_drivers_df = self.DRIVER_DF[self.DRIVER_DF['available'] == True]
+        return avail_drivers_df.to_dict(orient="records")
+
 
 memory_data = Memory_Data()
 
 
-# source  https://docs.obspy.org/packages/autogen/obspy.geodetics.base.degrees2kilometers.html
-DEGREE_KMS = 111.19492664455873
 
 class Distance_Service:
     def calc_two_location_distance(self, location1, location2):
@@ -65,14 +68,15 @@ class Driver_Service:
     def __init__(self, userId, location, cab_color):
         self.userId = userId
         self.cab_color = cab_color
-        self.is_pink = cab_color.lower() == 'pink'
+        self.is_pink = cab_color.lower() == PINK
         self.user_latitude = location.latitude
         self.user_longitude = location.longitude
         self.user_dist_from_origin = Distance_Service.distance_from_origin(location)
 
+
     # def get_available_drivers(self):
     #     if self.is_pink:
-    #         available_drivers = Driver.objects.filter(available=True, cab_color='pink')
+    #         available_drivers = Driver.objects.filter(available=True, cab_color=PINK)
     #     else:
     #         available_drivers = Driver.objects.filter(available=True)
     #     return available_drivers
@@ -195,7 +199,7 @@ class Ride_Service:
 
         cab_color = self.rideObj.get("cab_color")
         price = round((1 * travel_time_minutes) + (2 * distance_travelled))
-        if cab_color.lower() == 'pink':
+        if cab_color.lower() == PINK:
             price += 5
             memory_data.PINK_DRIVER_DIST_MAP[driver_dist_from_origin] = self.driveId
             memory_data.PINK_DISTANCE_TREE.add_node(driver_dist_from_origin)

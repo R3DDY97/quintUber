@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
-from .service import Driver_Service, Ride_Service,  Push_Notification
+from .service import Driver_Service, Ride_Service, memory_data
 
 
 def parse_req(req):
@@ -12,9 +12,14 @@ def parse_req(req):
 
 def driver_list(request):
     if request.method == 'GET':
-        drivers = Driver.objects.filter(available=True)
-        return JsonResponse({success: True, data: drivers})
-    return JsonResponse({success: False, message: "method not allowed"})
+        drivers = memory_data.get_drivers_list()
+        return JsonResponse({"success": True, "data": drivers})
+    return JsonResponse({"success": False, "message": "method not allowed"})
+
+def display_cars(request):
+    if request.method == 'GET':
+        return render(request, "uber/cars.html")
+    return JsonResponse({"success": False, "message": "method not allowed"})
 
 
 @csrf_exempt
@@ -27,7 +32,7 @@ def request_ride(request):
         driver_service = Driver_Service(userId, location, cab_color)
         ride_data = driver_service.process_ride_request()
         return JsonResponse(ride_data)
-    return JsonResponse({success: False, message: "method not allowed"})
+    return JsonResponse({"success": False, "message": "method not allowed"})
 
 @csrf_exempt
 def accept_ride(request):
@@ -37,8 +42,8 @@ def accept_ride(request):
         driverId = data.driverId
         ride = Ride_Service(rideId)
         ride.ride_accepted()
-        return JsonResponse({success: True, message: "OK"})
-    return JsonResponse({success: False, message: "method not allowed"})
+        return JsonResponse({"success": True, "message": "OK"})
+    return JsonResponse({"success": False, "message": "method not allowed"})
 
 
 @csrf_exempt
@@ -49,8 +54,8 @@ def start_ride(request):
         start_location = data.location
         ride = Ride_Service(rideId)
         ride.ride_started(start_location)
-        return JsonResponse({success: True, message: "OK"})
-    return JsonResponse({success: False, message: "method not allowed"})
+        return JsonResponse({"success": True, "message": "OK"})
+    return JsonResponse({"success": False, "message": "method not allowed"})
 
 @csrf_exempt
 def end_ride(request):
@@ -60,5 +65,5 @@ def end_ride(request):
         location = data.location
         ride = Ride_Service(rideId, location)
         ride.ride_ended()
-        return JsonResponse({success: True, message: "OK"})
-    return JsonResponse({success: False, message: "method not allowed"})
+        return JsonResponse({"success": True, "message": "OK"})
+    return JsonResponse({"success": False, "message": "method not allowed"})
