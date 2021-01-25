@@ -5,7 +5,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
-from .service import Driver_Service, Ride_Service, memory_data
+from .service import Driver_Service, Ride_Service
 
 
 def parse_req(req):
